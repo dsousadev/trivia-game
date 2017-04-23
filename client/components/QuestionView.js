@@ -1,42 +1,43 @@
 import React from 'react';
 let _ = require('underscore');
-var decodeEntities = (function() {
-  // this prevents any overhead from creating the object each time
-  var element = document.createElement('div');
 
-  function decodeHTMLEntities (str) {
-    if(str && typeof str === 'string') {
-      // strip script/html tags
-      str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
-      str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
-      element.innerHTML = str;
-      str = element.textContent;
-      element.textContent = '';
+class QuestionView extends React.Component {
+    constructor(props) {
+      super(props);
+      let answers = props.question.incorrect_answers.slice(0);
+      answers.push(props.question.correct_answer);
+      answers = _.shuffle(answers);
+      this.state = {
+        answers: answers,
+        question: props.question
+      };
+      
+      
     }
-
-    return str;
-  }
-
-  return decodeHTMLEntities;
-})();
-
-let QuestionView = ({question}) => {
-    let answers = question.incorrect_answers.slice(0);
-    answers.push(question.correct_answer);
-    answers = _.shuffle(answers);
+    decodeEntities (str) {
+      var element = document.createElement('div');
+      if(str && typeof str === 'string') {
+        str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+        str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+        element.innerHTML = str;
+        str = element.textContent;
+        element.textContent = '';
+      }
+      return str;
+    }    
     
+    render() {
+      return (
+        <div>
+          <h4>Category: {this.decodeEntities(this.state.question.category)} </h4>
+          <p>Question: {this.decodeEntities(this.state.question.question)} </p> 
 
-    return (
-      <div>
-        <h4>Category: {decodeEntities(question.category)} </h4>
-        <p>Question: {decodeEntities(question.question)} </p> 
-
-
-        <form>
-            {answers.map((answer) => <div><input type="radio" name='answer' label={decodeEntities(answer)}/> {decodeEntities(answer)} </div> )}
-        </form>
-      </div>
-    )
+          <form>
+              {this.state.answers.map((answer) => <div><input type="radio" name='answer' label={this.decodeEntities(answer)}/> {this.decodeEntities(answer)} </div> )}
+          </form>
+        </div>
+      ) 
+    }
 }
 
 export default QuestionView;
