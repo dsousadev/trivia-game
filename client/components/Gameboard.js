@@ -23,6 +23,20 @@ class Gameboard extends React.Component {
   }
   handleButton() {
     this.setState({checkScores: true});
+    var app = this.
+    axios.get('/highscore')
+      .then(res => {
+        console.log(res);
+        app.setState({highScores: res});
+      })
+    this.checkAgainstHighScores();
+  }
+  checkAgainstHighScores() {
+    this.state.highScores.forEach(highScore => {
+      if(this.state.score > highScore){
+        this.state.highScores.push(this.state.score);
+      }
+    })
   }
   render() {
     if(this.state.checkScores) {

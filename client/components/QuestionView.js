@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react'
 import _ from 'underscore'
 import { Form, Button, ButtonControl } from 'react-bootstrap'
-import AlertContainer from 'react-alert';
+import AlertContainer from 'react-alert'
 
 class QuestionView extends React.Component {
     constructor(props) {
@@ -19,8 +19,7 @@ class QuestionView extends React.Component {
         offset: 14,
         position: 'top right',
         theme: 'light',
-        time: 2000,
-        transition: 'scale'
+        transition: 'fade'
       };
     }
     decodeEntities (str) {
@@ -34,7 +33,6 @@ class QuestionView extends React.Component {
       }
       return str;
     }
-
     handleOptionChange(changeEvent) {
       this.setState({
         selectedOption: changeEvent.currentTarget.value
@@ -44,9 +42,9 @@ class QuestionView extends React.Component {
       e.preventDefault();
       if(this.state.correctAnswer === this.state.selectedOption){
         this.state.incrementScore();
-        alert('You are correct!');
+        msg.success('You are correct!');
       } else {
-        alert('Oops the correct answer was: ' + this.state.correctAnswer);
+        msg.error('Oops the correct answer was: ' + this.state.correctAnswer);
       }
      
     }
@@ -55,12 +53,12 @@ class QuestionView extends React.Component {
         <div>
           <h4>Category: {this.decodeEntities(this.state.question.category)} </h4>
           <p>Question: {this.decodeEntities(this.state.question.question)} </p> 
-
           <div>
               {this.state.answers.map((answer) => <div><input type="radio" name={this.state.question} onChange={this.handleOptionChange.bind(this)}   value={this.decodeEntities(answer)} /> {this.decodeEntities(answer)} </div> )}
               <Button bsStyle='primary' onClick={this.handleButtonClick.bind(this)}>Submit</Button> 
               <br /> <br />
           </div>
+          <AlertContainer ref={(a) => global.msg = a} {...this.alertOptions} />
         </div>
       ) 
     }
