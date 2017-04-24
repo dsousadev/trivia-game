@@ -1,5 +1,7 @@
 import React from 'react';
-let _ = require('underscore');
+import _ from 'underscore'
+import { Form, Button, ButtonControl } from 'react-bootstrap'
+import AlertContainer from 'react-alert';
 
 class QuestionView extends React.Component {
     constructor(props) {
@@ -9,10 +11,17 @@ class QuestionView extends React.Component {
       answers = _.shuffle(answers);
       this.state = {
         answers: answers,
-        question: props.question
+        question: props.question,
+        correctAnswer: props.question.correct_answer,
+        incrementScore: props.incrementScore
       };
-      
-      
+      this.alertOptions = {
+        offset: 14,
+        position: 'top right',
+        theme: 'light',
+        time: 2000,
+        transition: 'scale'
+      };
     }
     decodeEntities (str) {
       var element = document.createElement('div');
@@ -24,17 +33,34 @@ class QuestionView extends React.Component {
         element.textContent = '';
       }
       return str;
-    }    
-    
+    }
+
+    handleOptionChange(changeEvent) {
+      this.setState({
+        selectedOption: changeEvent.currentTarget.value
+      });
+    }
+    handleButtonClick(e) {
+      e.preventDefault();
+      if(this.state.correctAnswer === this.state.selectedOption){
+        this.state.incrementScore();
+        alert('You are correct!');
+      } else {
+        alert('Oops the correct answer was: ' + this.state.correctAnswer);
+      }
+     
+    }
     render() {
       return (
         <div>
           <h4>Category: {this.decodeEntities(this.state.question.category)} </h4>
           <p>Question: {this.decodeEntities(this.state.question.question)} </p> 
 
-          <form>
-              {this.state.answers.map((answer) => <div><input type="radio" name='answer' label={this.decodeEntities(answer)}/> {this.decodeEntities(answer)} </div> )}
-          </form>
+          <div>
+              {this.state.answers.map((answer) => <div><input type="radio" name={this.state.question} onChange={this.handleOptionChange.bind(this)}   value={this.decodeEntities(answer)} /> {this.decodeEntities(answer)} </div> )}
+              <Button bsStyle='primary' onClick={this.handleButtonClick.bind(this)}>Submit</Button> 
+              <br /> <br />
+          </div>
         </div>
       ) 
     }
